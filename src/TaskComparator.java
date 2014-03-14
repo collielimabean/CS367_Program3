@@ -19,4 +19,9 @@ public class TaskComparator implements Comparator<Task>
         return 0;
     }
     
+    public boolean equals(Object o)
+    {
+        throw new UnsupportedOperationException();
+    }
+    
 }

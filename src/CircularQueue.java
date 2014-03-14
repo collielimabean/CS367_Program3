@@ -1,3 +1,16 @@
+///////////////////////////////////////////////////////////////////////////////
+// Main Class File:  RealTimeScheduler.java
+// File:             CircularQueue.java
+// Semester:         CS367 Spring 2014
+//
+// Author:           William Jen <wjen@wisc.edu>
+// CS Login:         jen
+// Lecturer's Name:  Professor Jim Skrentny
+//////////////////// PAIR PROGRAMMERS COMPLETE THIS SECTION ////////////////////
+// Pair Partner:     Allen Hung
+// CS Login:         ahung
+// Lecturer's Name:  Professor Jim Skrentny
+//////////////////////////// 80 columns wide //////////////////////////////////
 
 import java.util.Comparator;
 import java.util.List;
@@ -9,59 +22,49 @@ public class CircularQueue<E> implements QueueADT<E>
     private Comparator<E> comparator;
     private int numItems;
     
-    public CircularQueue(Comparator<E> comparator)
+    public CircularQueue(Comparator<E> comparator, int capacity)
     {
         this.comparator = comparator;
-        queue = new ArrayList<E>();
+        queue = new ArrayList<E>(capacity);
+        
         numItems = 0;
     }
     
-    @Override
     public boolean isEmpty()
     {
         return numItems == 0;
     }
 
-    @Override
     public boolean isFull()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return numItems == queue.size();
     }
 
-    @Override
     public E peek() throws EmptyQueueException
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
     public E dequeue() throws EmptyQueueException 
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
     public void enqueue(E item) throws FullQueueException
     {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
     public int capacity() 
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return queue.size();
     }
 
-    @Override
     public int size()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return numItems;
     }
 
 }
