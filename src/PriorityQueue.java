@@ -31,13 +31,11 @@ public class PriorityQueue<E> implements QueueADT<E>
      * @param comparator Comparator object to compare two type E objects
      * @param maxCapacity Maximum capacity of the queue
      */
+    @SuppressWarnings("unchecked")
     public PriorityQueue(Comparator<E> comparator, int maxCapacity)
     {       
         this.comparator = comparator;
-        
-        //unavoidable warning
-        queue = (E[]) new Object[maxCapacity];
-        
+        queue = (E[]) new Object[maxCapacity + 1];
         numItems = 0;
     }
     
@@ -56,7 +54,7 @@ public class PriorityQueue<E> implements QueueADT<E>
      */
     public boolean isFull() 
     {
-        return numItems == queue.length;
+        return numItems == queue.length - 1;
     }
     
     /**
@@ -69,7 +67,7 @@ public class PriorityQueue<E> implements QueueADT<E>
         if(isEmpty())
             throw new EmptyQueueException();
         
-        return queue[0];
+        return queue[1];
     }
     
     /**
@@ -82,10 +80,14 @@ public class PriorityQueue<E> implements QueueADT<E>
         if(isEmpty())
             throw new EmptyQueueException();
         
-        E data = queue[0];
+        E data = queue[1];
         
-        queue[0] = queue[queue.length - 1];
-        queue[queue.length - 1] = null;
+        //Set first element to the last element
+        queue[1] = queue[numItems];
+        
+        //Destroy last item
+        queue[numItems] = null;
+        
         numItems--;
         
         heapify();
@@ -107,9 +109,10 @@ public class PriorityQueue<E> implements QueueADT<E>
         if(size() >= capacity())
             throw new FullQueueException();
         
-        queue[numItems] = item;
-        
+        queue[numItems + 1] = item;
         numItems++;
+        
+        heapify();
     }
     
     /**
@@ -118,7 +121,7 @@ public class PriorityQueue<E> implements QueueADT<E>
      */
     public int capacity()
     {
-        return queue.length;
+        return queue.length - 1;
     }
     
     /**
@@ -135,7 +138,52 @@ public class PriorityQueue<E> implements QueueADT<E>
      */
     private void heapify()
     {
-        //TODO finish me
+        for(int i = 1; i < (queue.length / 2) - 1; i *= 2)
+        {
+            int compare;
+            int larger;
+            
+            switch(numItems)
+            {
+                case 0:
+                case 1:
+                    return;
+                    
+                case 2:
+                    larger = i + 1;
+                    break;
+                    
+                default:
+                    compare = comparator.compare(queue[2 * i]
+                                                    , queue[(2 * i) + 1]);
+                    
+                    larger = (compare < 0) ? 2 * i : (2 * i) + 1;
+                    break;
+            }
+            
+            //compare parent and larger of nodes
+            compare = comparator.compare(queue[i], queue[larger]);
+            
+            if(compare > 0)
+                swap(i, larger);
+        }
+    }
+    
+    /**
+     * Swaps the data at two specified locations.
+     * @param index1 The first index to swap
+     * @param index2 The second index to swap
+     * @throws IndexOutofBoundsException if index1 or index2 are out of range
+     */
+    private void swap(int index1, int index2)
+    {
+        if(index1 < 0 || index1 > numItems 
+                      || index2 < 0 || index2 > numItems)
+            throw new IndexOutOfBoundsException();
+        
+        E holdValueIndex1 = queue[index1];
+        queue[index1] = queue[index2];
+        queue[index2] = holdValueIndex1;
     }
 
 }
