@@ -97,6 +97,8 @@ public class CircularQueue<E> implements QueueADT<E>
         //destroy front element
         queue.set(front, null);
         
+        numItems--;
+        
         //shift front accordingly
         if(isEmpty())
         {
@@ -105,8 +107,6 @@ public class CircularQueue<E> implements QueueADT<E>
         }
         
         else front++;
-        
-        numItems--;
         
         return data;
     }
@@ -134,9 +134,8 @@ public class CircularQueue<E> implements QueueADT<E>
         //cases after wrap-around
         else if(rear < queue.size())
         {
-            //set
-            rear++;
             queue.set(rear, item);
+            rear++;
         }
         
         //initial case: no wrap-arounds have occurred

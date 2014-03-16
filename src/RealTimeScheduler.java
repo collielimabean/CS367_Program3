@@ -16,6 +16,7 @@
 //////////////////////////// 80 columns wide //////////////////////////////////
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This class determines whether a set of processes and tasks can be executed
@@ -23,6 +24,37 @@ import java.util.List;
  */
 public class RealTimeScheduler
 {    
+    /**
+     * Returns the least common multiple (LCM) of two nonnegative numbers.
+     * @param a the first number to get LCM
+     * @param b the second number to get LCM
+     * @return the least common multiple of both numbers
+     * @throws IllegalArgumentException if non-positive numbers are passed in
+     */
+    static int lcm(int a, int b)
+    {
+        return (a * b) / gcd(a, b);
+    }
+    
+    /**
+     * Computes the greatest common denominator (GCD) of two positive numbers
+     * using Euclid's algorithm.
+     * @param a the first number to get GCD
+     * @param b the second number to get GCD
+     * @return the greatest common denominator of both numbers
+     * @throws IllegalArgumentException if non-positive numbers are passed in
+     */
+    static int gcd(int a, int b)
+    {
+        if(a < 0 || b < 0)
+            throw new IllegalArgumentException();
+        
+        if(b == 0)
+            return a;
+        
+        return gcd(b, a % b);
+    }
+        
     /**
      * This method is the entry point for the RealTimeScheduler application.
      * @param args Command-line arguments
@@ -75,14 +107,18 @@ public class RealTimeScheduler
         
         ProcessGenerator processGen = new ProcessGenerator();
         
-        //add processes to processGen
-        for(Process p : processes)
-            processGen.addProcess(p.getPeriod(), p.getComputeTime());
+        int deadline = 1;
         
-        boolean deadlineMissed = false;
+        //add processes to processGen and determine deadline
+        for(Process p : processes)
+        {
+            processGen.addProcess(p.getPeriod(), p.getComputeTime());
+            deadline = lcm(deadline, p.getPeriod());
+        }
+        
         int timeStep = 0;
         
-        while(!deadlineMissed)
+        while(timeStep <= deadline)
         {
             List<ComputeResource> resources = resourceGen.getResources();
             
@@ -113,16 +149,70 @@ public class RealTimeScheduler
                 
                 catch (FullQueueException e)
                 {
-                    //TODO Failure: Too many tasks!
+                    break;
                 }
             }
             
-            //TODO @see step 3 + 4: Apply resources + remove complete tasks
+            List<Task> incompleteTasks = new ArrayList<Task>();            
             
-            //TODO @see step 5: Have we missed a deadline?
+            //apply resources until there are no more tasks to apply OR
+            //there are no more resources to apply
+            while(!circQueue.isEmpty() && !priorityQueue.isEmpty())
+            {
+                try
+                {
+                    ComputeResource resource = circQueue.dequeue();
+                    Task highest = priorityQueue.dequeue();
+                    
+                    highest.updateProgress(resource.getValue());
+                    
+                    if(!highest.isComplete())
+                        incompleteTasks.add(highest);
+                }
+                
+                catch (EmptyQueueException e)
+                {
+                    //TODO shouldn't happen
+                }
+            }
             
-            //TODO increment timeStep
+            //add popped tasks back into queue
+            for(Task t : incompleteTasks)
+            {
+                try
+                {
+                    priorityQueue.enqueue(t);
+                }
+                
+                catch (FullQueueException e)
+                {
+                   // shouldn't happen
+                }
+            }
+            
+            //@see step 5
+            try 
+            {
+                Task top = priorityQueue.peek();
+                
+                if(top.missedDeadline(timeStep))
+                {
+                    System.out.println("Deadline missed at timestep " + timeStep);
+                    return;
+                }
+            } 
+            
+            catch (EmptyQueueException e)
+            {
+                //shouldn't happen
+            }
+            
+            timeStep++;
         }
+        
+        //Success
+        System.out.println("Scheduling complete after "
+                                        + deadline + " timesteps.");
         
     }
 }

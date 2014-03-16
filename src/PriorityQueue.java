@@ -150,7 +150,7 @@ public class PriorityQueue<E> implements QueueADT<E>
         for(int i = 1; i < (queue.length / 2) - 1; i *= 2)
         {
             int compare;
-            int larger;
+            int smaller;
             
             switch(numItems)
             {
@@ -161,7 +161,7 @@ public class PriorityQueue<E> implements QueueADT<E>
                 
                 //Two element arrays just need to compare with each other
                 case 2:
-                    larger = i + 1;
+                    smaller = i + 1;
                     break;
                 
                 //3 elements is minimum for proper binary tree    
@@ -169,16 +169,17 @@ public class PriorityQueue<E> implements QueueADT<E>
                     compare = comparator.compare(queue[2 * i]
                                                     , queue[(2 * i) + 1]);
                     
-                    larger = (compare < 0) ? 2 * i : (2 * i) + 1;
+                    smaller = (compare < 0) ? 2 * i : (2 * i) + 1;
                     break;
             }
             
             //compare parent and larger of nodes
-            compare = comparator.compare(queue[i], queue[larger]);
+            compare = comparator.compare(queue[i], queue[smaller]);
             
             //swap if not in right place
+            //compare > 0 when smaller deadline is earlier
             if(compare > 0)
-                swap(i, larger);
+                swap(i, smaller);
         }
     }
     
