@@ -1,36 +1,45 @@
 
-public class Task extends Process{
+public class Task extends Process
+{
 	private int deadline;
 	private int progress;
 	private int arrival;
-	public Task(Process p, int time) {
+	
+	public Task(Process p, int time)
+	{
 		super(p.getPeriod(), p.getComputeTime());
 		arrival = time;
 		deadline = time + this.period;
 		progress = 0;
 	}
 	
-	public int getArrival(){
+	public int getArrival()
+	{
 		return arrival;
 	}
 	
-	public int getDeadline(){
+	public int getDeadline()
+	{
 		return deadline;
 	}
 	
-	public int getProgress(){
+	public int getProgress()
+	{
 		return progress;
 	}
 	
-	public void updateProgress(int amt){
+	public void updateProgress(int amt)
+	{
 		progress += amt;
 	}
 	
-	public boolean isComplete(){
+	public boolean isComplete()
+	{
 		return progress >= compute_time;
 	}
 	
-	public boolean missedDeadline(int time){
+	public boolean missedDeadline(int time)
+	{
 		return deadline <= time;
 	}
 	

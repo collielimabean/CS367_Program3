@@ -64,14 +64,14 @@ public class RealTimeScheduler
         //initialize comparators, resource generators, and queues
         TaskComparator taskComp = new TaskComparator();
         
-        ComputeResourceGenerator generator = new ComputeResourceGenerator(
-                                                                       maxTime);
+        ComputeResourceGenerator resourceGen =
+                            new ComputeResourceGenerator(maxTime);
         
-        CircularQueue<Task> circQueue = new CircularQueue<Task>(
-                                                        taskComp, circularSize);
+        CircularQueue<ComputeResource> circQueue = 
+                            new CircularQueue<ComputeResource>(circularSize);
         
-        PriorityQueue<Task> priorQueue = new PriorityQueue<Task>(
-                                                        taskComp, prioritySize);
+        PriorityQueue<Task> priorityQueue =
+                            new PriorityQueue<Task>(taskComp, prioritySize);
         
         ProcessGenerator processGen = new ProcessGenerator();
         
@@ -79,6 +79,47 @@ public class RealTimeScheduler
         for(Process p : processes)
             processGen.addProcess(p.getPeriod(), p.getComputeTime());
         
+        boolean deadlineMissed = false;
+        int timeStep = 0;
+        
+        while(!deadlineMissed)
+        {
+            List<ComputeResource> resources = resourceGen.getResources();
+            
+            //@see step 1
+            for(ComputeResource resource : resources)
+            {
+                try
+                {
+                    circQueue.enqueue(resource);
+                }
+                
+                catch (FullQueueException e)
+                {
+                    break;
+                }
+            }
+            
+            //@see step 2
+            List<Task> tasks = processGen.getTasks(timeStep);
+            
+            for(Task task : tasks)
+            {
+                try
+                {
+                    priorityQueue.enqueue(task);
+                }
+                
+                catch (FullQueueException e)
+                {
+                    //TODO Failure: Too many tasks!
+                }
+            }
+            
+            //@see step 3 + 4: Apply resources + remove complete tasks
+            
+            //@see step 5: Have we missed a deadline?
+        }
         
         
     }

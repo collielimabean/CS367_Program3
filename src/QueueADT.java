@@ -1,5 +1,7 @@
 
-public interface QueueADT<E> {
+public interface QueueADT<E>
+{
+    
 	/**
 	 * Checks if the queue is empty.
 	 * @return true if the queue is empty; otherwise false

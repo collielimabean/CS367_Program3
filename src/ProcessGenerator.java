@@ -21,6 +21,14 @@ public class ProcessGenerator
     private ArrayList<Process> processes;
     
     /**
+     * Instantiates a ProcessGenerator object.
+     */
+    public ProcessGenerator()
+    {
+        processes = new ArrayList<Process>();
+    }
+    
+    /**
      * Adds a Process with a specified period and compute time to a list
      * of processes.
      * @param period The period of a process
@@ -41,7 +49,6 @@ public class ProcessGenerator
     {
         ArrayList<Task> tasks = new ArrayList<Task>();
         
-        //TODO if time = 0?
         for(Process process : processes)
         {
             if(time % process.getPeriod() == 0)

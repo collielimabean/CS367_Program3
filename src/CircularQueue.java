@@ -12,19 +12,16 @@
 // Lecturer's Name:  Professor Jim Skrentny
 //////////////////////////// 80 columns wide //////////////////////////////////
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
 public class CircularQueue<E> implements QueueADT<E>
 {
     private List<E> queue;
-    private Comparator<E> comparator;
     private int numItems;
     
-    public CircularQueue(Comparator<E> comparator, int capacity)
+    public CircularQueue(int capacity)
     {
-        this.comparator = comparator;
         queue = new ArrayList<E>(capacity);
         
         numItems = 0;
