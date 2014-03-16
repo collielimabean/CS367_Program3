@@ -96,6 +96,7 @@ public class RealTimeScheduler
                 
                 catch (FullQueueException e)
                 {
+                    //waste the rest of the resources
                     break;
                 }
             }
@@ -116,11 +117,12 @@ public class RealTimeScheduler
                 }
             }
             
-            //@see step 3 + 4: Apply resources + remove complete tasks
+            //TODO @see step 3 + 4: Apply resources + remove complete tasks
             
-            //@see step 5: Have we missed a deadline?
+            //TODO @see step 5: Have we missed a deadline?
+            
+            //TODO increment timeStep
         }
-        
         
     }
 }

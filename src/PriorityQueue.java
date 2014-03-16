@@ -30,10 +30,19 @@ public class PriorityQueue<E> implements QueueADT<E>
      * maximum capacity.
      * @param comparator Comparator object to compare two type E objects
      * @param maxCapacity Maximum capacity of the queue
+     * @throws IllegalArgumentException if comparator is null or 
+     * maxCapacity is non-positive.
      */
     @SuppressWarnings("unchecked")
     public PriorityQueue(Comparator<E> comparator, int maxCapacity)
     {       
+        if(comparator == null)
+            throw new IllegalArgumentException("Comparator cannot be null.");
+        
+        if(maxCapacity <= 0)
+            throw new IllegalArgumentException("Cannot construct a queue" 
+                    + " with" +  maxCapacity + "elements."); 
+        
         this.comparator = comparator;
         queue = (E[]) new Object[maxCapacity + 1];
         numItems = 0;
@@ -145,14 +154,17 @@ public class PriorityQueue<E> implements QueueADT<E>
             
             switch(numItems)
             {
+                //Zero or one element arrays don't need to be heapified
                 case 0:
                 case 1:
                     return;
-                    
+                
+                //Two element arrays just need to compare with each other
                 case 2:
                     larger = i + 1;
                     break;
-                    
+                
+                //3 elements is minimum for proper binary tree    
                 default:
                     compare = comparator.compare(queue[2 * i]
                                                     , queue[(2 * i) + 1]);
@@ -164,6 +176,7 @@ public class PriorityQueue<E> implements QueueADT<E>
             //compare parent and larger of nodes
             compare = comparator.compare(queue[i], queue[larger]);
             
+            //swap if not in right place
             if(compare > 0)
                 swap(i, larger);
         }
@@ -184,6 +197,22 @@ public class PriorityQueue<E> implements QueueADT<E>
         E holdValueIndex1 = queue[index1];
         queue[index1] = queue[index2];
         queue[index2] = holdValueIndex1;
+    }
+    
+    /**
+     * Returns a readable String for the queue.
+     * @return A readable String for the queue.
+     */
+    public String toString()
+    {
+        String print = "[";
+        
+        for(E element : queue)
+            print += element + ", ";
+        
+        print += "]";
+        
+        return print;
     }
 
 }
