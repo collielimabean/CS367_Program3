@@ -120,6 +120,11 @@ public class RealTimeScheduler
         
         while(timeStep <= deadline)
         {
+            if(timeStep == 120)
+            {
+                int lol = 3;
+            }
+            
             List<ComputeResource> resources = resourceGen.getResources();
             
             //@see step 1
@@ -149,6 +154,7 @@ public class RealTimeScheduler
                 
                 catch (FullQueueException e)
                 {
+                    System.out.println("Task added failed: Timestep " + timeStep);
                     break;
                 }
             }
@@ -166,7 +172,10 @@ public class RealTimeScheduler
                     
                     highest.updateProgress(resource.getValue());
                     
-                    if(!highest.isComplete())
+               //     if(highest.isComplete())
+                 //       priorityQueue.dequeue();
+                    
+                   if(!highest.isComplete())
                         incompleteTasks.add(highest);
                 }
                 
@@ -190,7 +199,10 @@ public class RealTimeScheduler
                 }
             }
             
-            //@see step 5
+            //resource application complete: increment timeStep
+            timeStep++;
+            
+            //check if any deadline missed
             try 
             {
                 Task top = priorityQueue.peek();
@@ -207,7 +219,6 @@ public class RealTimeScheduler
                 //shouldn't happen
             }
             
-            timeStep++;
         }
         
         //Success

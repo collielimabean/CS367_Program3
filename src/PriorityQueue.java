@@ -37,14 +37,14 @@ public class PriorityQueue<E> implements QueueADT<E>
     public PriorityQueue(Comparator<E> comparator, int maxCapacity)
     {       
         if(comparator == null)
-            throw new IllegalArgumentException("Comparator cannot be null.");
+            throw new IllegalArgumentException();
         
         if(maxCapacity <= 0)
             throw new IllegalArgumentException("Cannot construct a queue" 
                     + " with" +  maxCapacity + "elements."); 
         
-        this.comparator = comparator;
         queue = (E[]) new Object[maxCapacity + 1];
+        this.comparator = comparator;
         numItems = 0;
     }
     
@@ -99,7 +99,7 @@ public class PriorityQueue<E> implements QueueADT<E>
         
         numItems--;
         
-        heapify();
+        rootHeapify();
         
         return data;
     }
@@ -112,16 +112,13 @@ public class PriorityQueue<E> implements QueueADT<E>
      */
     public void enqueue(E item) throws FullQueueException
     {
-        if(item == null)
-            throw new IllegalArgumentException();
-        
         if(size() >= capacity())
             throw new FullQueueException();
         
         queue[numItems + 1] = item;
         numItems++;
         
-        heapify();
+        leafHeapify();
     }
     
     /**
@@ -143,43 +140,78 @@ public class PriorityQueue<E> implements QueueADT<E>
     }
     
     /**
-     * Sorts the array into a proper binary tree.
+     * Heapifies the heap from the root to the leaves. (top - bottom)
      */
-    private void heapify()
+    private void rootHeapify()
     {
-        for(int i = 1; i < (queue.length / 2) - 1; i *= 2)
+        downHeapify(1);
+    }
+    
+    /**
+     * Down-heapifies the heap from the specified index to the heap's leaves.
+     * @param index the start index to down-heapify.
+     */
+    private void downHeapify(int index)
+    {
+        //outside range implies we hit a leaf
+        if(2 * index > numItems)
+            return;
+        
+        //if not, grab appropriate indices
+        int left = 2 * index;
+        int right = left + 1;
+        int smaller;
+        
+        //if right index does not exist, choose the left index
+        if(right > numItems)
+            smaller = left;
+        
+        //compare left, right: if left has earlier deadline, smaller = left
+        //otherwise right is smaller
+        else 
+            smaller = comparator.compare(queue[left], queue[right]) < 0 
+                                                        ? left : right;
+        
+        //compare with parent, and continue down-heapify on children nodes
+        if(comparator.compare(queue[smaller], queue[index]) < 0)
         {
-            int compare;
-            int smaller;
+            swap(index, smaller);
+            downHeapify(smaller);
+        }
+        
+    }
+    
+    /**
+     * Heapifies from the last element to the root element.
+     */
+    private void leafHeapify()
+    {
+        upHeapify(numItems);
+    }
+    
+    /**
+     * Up-heapifies to the root from the specified index.
+     * @param index the specified index to up-heapify.
+     */
+    private void upHeapify(int index)
+    {
+        //we hit the root
+        if(index <= 1)
+            return;
+        
+        //get parent index
+        int parent = index / 2;
+        
+        //compare with parent
+        if(comparator.compare(queue[index], queue[parent]) < 0)
+        {
+            swap(index, parent);
             
-            switch(numItems)
-            {
-                //Zero or one element arrays don't need to be heapified
-                case 0:
-                case 1:
-                    return;
-                
-                //Two element arrays just need to compare with each other
-                case 2:
-                    smaller = i + 1;
-                    break;
-                
-                //3 elements is minimum for proper binary tree    
-                default:
-                    compare = comparator.compare(queue[2 * i]
-                                                    , queue[(2 * i) + 1]);
-                    
-                    smaller = (compare < 0) ? 2 * i : (2 * i) + 1;
-                    break;
-            }
+            //continue the up-heapify
+            upHeapify(parent);
             
-            //compare parent and larger of nodes
-            compare = comparator.compare(queue[i], queue[smaller]);
-            
-            //swap if not in right place
-            //compare > 0 when smaller deadline is earlier
-            if(compare > 0)
-                swap(i, smaller);
+            //ensure swapped element is in the right place
+            downHeapify(index);
         }
     }
     
@@ -208,8 +240,8 @@ public class PriorityQueue<E> implements QueueADT<E>
     {
         String print = "[";
         
-        for(E element : queue)
-            print += element + ", ";
+        for(int i = 1; i < numItems + 1; i++)
+            print += queue[i]  + ", ";
         
         print += "]";
         
