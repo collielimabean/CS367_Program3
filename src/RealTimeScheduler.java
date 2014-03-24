@@ -113,17 +113,13 @@ public class RealTimeScheduler
         for(Process p : processes)
         {
             processGen.addProcess(p.getPeriod(), p.getComputeTime());
-            deadline = lcm(deadline, p.getPeriod());
+            deadline = lcm(deadline, p.getPeriod()); 
         }
         
         int timeStep = 0;
         
         while(timeStep <= deadline)
         {
-            if(timeStep == 120)
-            {
-                int lol = 3;
-            }
             
             List<ComputeResource> resources = resourceGen.getResources();
             
@@ -154,7 +150,8 @@ public class RealTimeScheduler
                 
                 catch (FullQueueException e)
                 {
-                    System.out.println("Task added failed: Timestep " + timeStep);
+                    System.out.println("Task added failed: Timestep " 
+                    												+ timeStep);
                     break;
                 }
             }
@@ -172,16 +169,15 @@ public class RealTimeScheduler
                     
                     highest.updateProgress(resource.getValue());
                     
-               //     if(highest.isComplete())
-                 //       priorityQueue.dequeue();
-                    
                    if(!highest.isComplete())
                         incompleteTasks.add(highest);
                 }
                 
                 catch (EmptyQueueException e)
                 {
-                    //TODO shouldn't happen
+                    System.out.println("Queue is empty, " +
+                    							   "please revise config file");
+                    return;
                 }
             }
             
@@ -195,7 +191,9 @@ public class RealTimeScheduler
                 
                 catch (FullQueueException e)
                 {
-                   // shouldn't happen
+                	System.out.println("Queue is full, " +
+                								   "please revise config file");
+                    return;
                 }
             }
             
@@ -209,14 +207,15 @@ public class RealTimeScheduler
                 
                 if(top.missedDeadline(timeStep))
                 {
-                    System.out.println("Deadline missed at timestep " + timeStep);
+                    System.out.println("Deadline missed at timestep " + 
+                    												  timeStep);
                     return;
                 }
             } 
             
             catch (EmptyQueueException e)
             {
-                //shouldn't happen
+            	//queue is empty, all tasks completed
             }
             
         }

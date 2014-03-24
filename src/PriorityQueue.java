@@ -112,8 +112,11 @@ public class PriorityQueue<E> implements QueueADT<E>
      */
     public void enqueue(E item) throws FullQueueException
     {
-        if(size() >= capacity())
-            throw new FullQueueException();
+    	if ( item == null)
+    		throw new IllegalArgumentException();
+    	
+		if ( size() >= capacity())
+			throw new FullQueueException();
         
         queue[numItems + 1] = item;
         numItems++;
@@ -144,7 +147,7 @@ public class PriorityQueue<E> implements QueueADT<E>
      */
     private void rootHeapify()
     {
-        downHeapify(1);
+        downHeapify(1); // 1 represents the root index, which starts at 1
     }
     
     /**
@@ -162,7 +165,7 @@ public class PriorityQueue<E> implements QueueADT<E>
         int right = left + 1;
         int smaller;
         
-        //if right index does not exist, choose the left index
+        //if right index does not exist, choose the left index ('child/ren')
         if(right > numItems)
             smaller = left;
         
@@ -183,10 +186,11 @@ public class PriorityQueue<E> implements QueueADT<E>
     
     /**
      * Heapifies from the last element to the root element.
+     * heapifies the index of the last referenced leaf
      */
     private void leafHeapify()
     {
-        upHeapify(numItems);
+        upHeapify(numItems); 
     }
     
     /**
@@ -195,7 +199,7 @@ public class PriorityQueue<E> implements QueueADT<E>
      */
     private void upHeapify(int index)
     {
-        //we hit the root
+        //we hit bedrock 
         if(index <= 1)
             return;
         

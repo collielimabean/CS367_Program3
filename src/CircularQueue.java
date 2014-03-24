@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * This class implements the QueueADT interface, and uses Java's implementation
  * of ArrayList to make a CircularQueue. This CircularQueue has a fixed
- * capacity, or is not expandable.
+ * capacity, and is not expandable.
  * @see QueueADT.java
  * @param <E> The type that can be placed within the queue.
  */

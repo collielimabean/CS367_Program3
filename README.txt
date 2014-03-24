@@ -3,7 +3,7 @@
 ================================================
 
 Programming Assignment Number:  3  
-Date Completed:
+Date Completed: 03/23/14
 
 Partner 1     Name: William Jen
 Partner 1 CS Login: jen
