@@ -77,7 +77,9 @@ public class RealTimeScheduler
         
         catch (BadConfigurationFileException e)
         {
-            System.err.println("Failed to parse configuration file. \n");
+            System.err.println("Failed to parse configuration file. " 
+                                + "Please make sure the file exists, or that"
+                                + " you typed it in correctly! \n");
             System.err.println("Your configuration file should be: \n" + 
                                "\t <Max number of computable resources> \n" + 
                                "\t <Capacity of Circular Queue> \n" + 
@@ -107,6 +109,7 @@ public class RealTimeScheduler
         
         ProcessGenerator processGen = new ProcessGenerator();
         
+        //holds final deadline (lcm of all processes)
         int deadline = 1;
         
         //add processes to processGen and determine deadline
@@ -116,15 +119,10 @@ public class RealTimeScheduler
             deadline = lcm(deadline, p.getPeriod()); 
         }
         
-        int timeStep = 0;
-        
-        while(timeStep <= deadline)
+        for(int timeStep = 0; timeStep <= deadline; timeStep++)
         {
-            
-            List<ComputeResource> resources = resourceGen.getResources();
-            
-            //@see step 1
-            for(ComputeResource resource : resources)
+            //grab all available compute resources and add to circle queue
+            for(ComputeResource resource : resourceGen.getResources())
             {
                 try
                 {
@@ -138,10 +136,8 @@ public class RealTimeScheduler
                 }
             }
             
-            //@see step 2
-            List<Task> tasks = processGen.getTasks(timeStep);
-            
-            for(Task task : tasks)
+            //grab all generated tasks and add to priority queue
+            for(Task task : processGen.getTasks(timeStep))
             {
                 try
                 {
@@ -150,9 +146,12 @@ public class RealTimeScheduler
                 
                 catch (FullQueueException e)
                 {
-                    System.out.println("Task added failed: Timestep " 
-                    												+ timeStep);
-                    break;
+                    //if this ever happens
+                    //we know that we missed a deadline
+                    //at the previous timeStep
+                    System.out.println("Deadline missed at timestep " 
+                                                              + (timeStep - 1));
+                    return;
                 }
             }
             
@@ -176,7 +175,7 @@ public class RealTimeScheduler
                 catch (EmptyQueueException e)
                 {
                     System.out.println("Queue is empty, " +
-                    							   "please revise config file");
+                    							   " this shouldn't happen!");
                     return;
                 }
             }
@@ -192,13 +191,10 @@ public class RealTimeScheduler
                 catch (FullQueueException e)
                 {
                 	System.out.println("Queue is full, " +
-                								   "please revise config file");
+                								   "this shouldn't happen!");
                     return;
                 }
             }
-            
-            //resource application complete: increment timeStep
-            timeStep++;
             
             //check if any deadline missed
             try 

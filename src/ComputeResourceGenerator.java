@@ -18,7 +18,7 @@ public class ComputeResourceGenerator
 		
 		int num = rng.nextInt() % maxCreate;
 		
-		for(int i = 0; i < num+1; i++) 
+		for(int i = 0; i < num + 1; i++) 
 		    res.add(new ComputeResource(1));
 		
 		return res;
